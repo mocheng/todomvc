@@ -32,8 +32,14 @@ $(function(){
 
     // Remove this Todo from *localStorage* and delete its view.
     clear: function() {
-      this.destroy();
-      this.view.remove();
+      var dfd = $.Deferred();
+      
+      this.destroy({
+        success : dfd.resolve,
+        erro    : dfd.reject
+      })
+      
+      return dfd;
     }
 
   });
@@ -151,9 +157,10 @@ $(function(){
       $(this.el).remove();
     },
 
-    // Remove the item, destroy the model.
+    // Remove the item in animation, destroy the model.
     clear: function() {
-      this.model.clear();
+      $.when(this.model.clear(), $(this.el).slideUp('slow').promise())
+       .done(_.bind(this.remove, this));
     }
 
   });
